@@ -1,0 +1,13 @@
+formatter: markdown table
+
+settings:
+  anchor: false
+  indent: 4
+
+output:
+  file: ../../README.md
+  mode: inject
+  template: |-
+    <!-- BEGIN_TF_VPCE_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_VPCE_DOCS -->

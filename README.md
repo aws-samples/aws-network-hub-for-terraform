@@ -133,13 +133,14 @@ env_config = {
 ### Deploy from client machine 
 When deploying from your local machine having configured the **TF Backend** in the code you need to ensure you have access to read and write to the backend - possible backends include HTTP, Consul, Postgres, Artifactory, S3 or S3 + DynamoDB. We initialise the Terraform, complete the validate and format. Review the plan and then apply.
 
- - terraform init
- - terraform validate
+ - ``` terraform init ```
+ - ``` terraform validate ```
  - set environment for deployment
-   - export TF_VAR_environment=" **ENV**" 
+   - ``` export TF_VAR_environment=" **ENV** " ```
+   - ``` Set-Item -Path env:TF_VAR_environment -Value “ **ENV** “ ```
        (Possible Env values - dev, test, preprod, prod)
- - terraform plan
- - terraform apply **or** terraform apply -auto-approve 
+ - ``` terraform plan ```
+ - ``` terraform apply ``` **or** ``` terraform apply --auto-approve ```
 
 -----------------------------------------------------------
 ### Tagging
@@ -155,7 +156,7 @@ We pass the tags as a variable (Map(string) - these are defined in the rott loca
 ```
 tags = {
   Product    = "Network_Automation"
-  Owner      = "WWPS"
+  Owner      = "GitHub"
   Project_ID = "12345"
 }
 ```
