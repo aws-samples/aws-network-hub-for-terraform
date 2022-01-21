@@ -17,15 +17,11 @@
 - [License](#license)
 
 ## Overview
-This repository contains terraform code to deploy a sample resources into an AWS Network Hub account. The resources deployed and the architectural pattern they follow is purely for demonstration/testing  purposes.
+This repository contains terraform code to deploy sample resources into an AWS Network Hub account. The resources deployed and the architectural pattern they follow is purely for demonstration/testing  purposes.
 
 Enterprise architecture can include many services combined to achieve a large and secure networks.
 
-**Linked Repository**
-
-https://gitlab.aws.dev/aandsco/network-spoke-terraform 
-
-**To deploy a full hub and spoke topology please see linked project to deploy a spoke account to consume centralised network services.**
+**To deploy a full hub and spoke topology please use solution in example-spoke-vpc directory to deploy an example spoke account to consume centralised network services.**
 
 The following resources will be deployed:
  - VPC Transit Gateway
@@ -65,11 +61,8 @@ Route 53 Resolver
 **Tooling**
  - Terraform ~> 1.1
    - AWS provider ~> 3.0
- - JQ
  - AWS CLI
  - Git CLI
- - TFsec
- - TFlint
 
 **Infrastructure**
  - AWS Organization
@@ -85,7 +78,7 @@ aws ram enable-sharing-with-aws-organization
 ![ipam](images/IPAM_Delegated.png)
 
 **Customisation**
- - If you do not define a remote backend Terraform will use the local directory to store the local backend files including tfstate. Examples of how to customise the Terraform backend are included but commented out.
+ - If you do not define a remote backend Terraform will use the local directory to store the backend files including tfstate. Examples of how to customise the Terraform backend are included but commented out.
 
  ![backend](images/backend.png)
 
@@ -93,8 +86,46 @@ aws ram enable-sharing-with-aws-organization
 
  ![http_backend](images/http_backend.png)
 
-
 ### Variables
+
+| Type | Variable Name | Description | Notes |
+|------|---------------|---------|-------|
+| Global variables | environment | Environment to deploy into. | Accepted values - dev, test, preprod, prod |
+| | aws_region | Region to deploy in. | |
+| | vpc_endpoints | List of centralised VPC endpoints to be deployed | |
+| Environment specific variables | ipam_cidr | CIDR to be allocated to the IP Address Manager | |
+| | tgw_route_tables | Transit Gateway Router Tables to create | |
+| | root_domain | Root DNS domain to create private hosted zone and resolver rules | |
+
+**Input Variable -** *config.auto.tfvars*
+
+```
+aws_region    = "eu-west-2"
+vpc_endpoints = ["ec2", "rds", "sqs", "sns", "ssm", "logs", "ssmmessages", "ec2messages", "autoscaling", "ecs", "athena"]
+
+env_config = {
+  dev = {
+    ipam_cidr        = "10.0.0.0/10"
+    tgw_route_tables = ["prod", "dev", "shared"]
+    root_domain      = "network-dev.internal"
+  }
+  test = {
+    ipam_cidr        = "10.64.0.0/10"
+    tgw_route_tables = ["prod", "dev", "shared"]
+    root_domain      = "network-test.internal"
+  }
+  preprod = {
+    ipam_cidr        = "10.128.0.0/10"
+    tgw_route_tables = ["prod", "dev", "shared"]
+    root_domain      = "network-preprod.internal"
+  }
+  prod = {
+    ipam_cidr        = "10.192.0.0/10"
+    tgw_route_tables = ["prod", "dev", "shared"]
+    root_domain      = "network-prod.internal"
+  }
+}
+```
 
 -----------------------------------------------------------
 ## Quick Start
@@ -103,18 +134,12 @@ aws ram enable-sharing-with-aws-organization
 When deploying from your local machine having configured the **TF Backend** in the code you need to ensure you have access to read and write to the backend - possible backends include HTTP, Consul, Postgres, Artifactory, S3 or S3 + DynamoDB. We initialise the Terraform, complete the validate and format. Review the plan and then apply.
 
  - terraform init
- - terraform fmt --recursive
  - terraform validate
- - tflint .
- - tfsec .
  - set environment for deployment
    - export TF_VAR_environment=" **ENV**" 
        (Possible Env values - dev, test, preprod, prod)
  - terraform plan
  - terraform apply **or** terraform apply -auto-approve 
-
------------------------------------------------------------
-### Validate Deployment
 
 -----------------------------------------------------------
 ### Tagging
