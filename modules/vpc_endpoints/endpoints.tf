@@ -14,12 +14,12 @@ resource "aws_security_group" "allow_vpc_endpoint" {
 resource "aws_security_group_rule" "org_cidr" {
   # Creates Security group rule to allow vpc endpoint traffic, attaches to security group created above.
   type              = "ingress"
-  from_port         = 433
-  to_port           = 433
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["${var.cidr}"]
   security_group_id = aws_security_group.allow_vpc_endpoint.id
-  description       = "Allow 433 traffic across org to vpc endpoints"
+  description       = "Allow 443 traffic across org to vpc endpoints"
 }
 
 resource "aws_vpc_endpoint" "interface" {
