@@ -1,36 +1,48 @@
+<!-- markdownlint-disable MD033 MD024 -->
 # Network Hub Account with Terraform
+
+## Overview
+
+This repository demonstrates a **scalable, segregated, secured** AWS network for **multi-account organizations**.
+Using Transit Gateway to separate production, non-production and shared services traffic,
+it deploys an advanced AWS networking pattern using centralized ingress and egress behind Network Firewall,
+centralizes private VPC endpoints to share across all VPCs, and manages IP address allocation using Amazon VPC IPAM.
+
+* Perfect for a central networking hub account, potentially alongside Account Factory for Terraform
+* Solution itself can be deployed into nonprod, test and production deployments for safe iteration and testing.
+* Written using clean, composable modules: the solution is easily extended and customised.
+
+[Spoke VPCs for organization members can be created using the provided sister example in this repo.](/example-spoke-vpc/README.md)
+
+The following resources will be deployed by this example:
+
+* VPC Transit Gateway
+* VPC Endpoints
+* AWS Network Firewall
+* Route 53 Resolver
+* Amazon VPC IP Address Manager
+
+The resources deployed and the architectural pattern they follow are provided for demonstration and
+testing purposes but are based on and inspired by AWS best practice and articles.
 
 ## Table of Contents
 
-- [Overview](#overview)
-  - [Diagrams](#diagrams)
-  - [Useful Links](#useful-links)
-- [Prerequisites](#prerequisites)
-  - [Variables](#variables)
-- [Quick Start](#quick-start)
-  - [Deploy from client machine](#deploy-from-client-machine)
-  - [Validate Deployment](#validate-deployment)
-  - [Tagging](#tagging)
-  - [clean Up](#clean-up)
-- [Terraform Docs](#terraform-docs)
-- [Security](#security)
-- [License](#license)
-
-## Overview
-This repository contains terraform code to deploy sample resources into an AWS Network Hub account. The resources deployed and the architectural pattern they follow is purely for demonstration/testing  purposes.
-
-Enterprise architecture can include many services combined to achieve a large and secure networks.
-
-**To deploy a full hub and spoke topology please use solution in example-spoke-vpc directory to deploy an example spoke account to consume centralised network services.**
-
-The following resources will be deployed:
- - VPC Transit Gateway
- - VPC Endpoints
- - AWS Network Firewall
- - Route 53 Resolver
- - Amazon VPC IP Address Manager
+* [Overview](#overview)
+  * [Diagrams](#diagrams)
+  * [References](#references)
+* [Prerequisites](#prerequisites)
+  * [Variables](#variables)
+* [Quick Start](#quick-start)
+  * [Deploy from client machine](#deploy-from-client-machine)
+  * [Validate Deployment](#validate-deployment)
+  * [Tagging](#tagging)
+  * [clean Up](#clean-up)
+* [Terraform Docs](#terraform-docs)
+* [Security](#security)
+* [License](#license)
 
 ### Diagrams
+
 Solution Diagram
 ![diagram](images/diagram.png)
 
@@ -46,42 +58,55 @@ Network Firewall
 Route 53 Resolver
 ![dns](images/dns.png)
 
-### Useful Links
- - https://aws.amazon.com/blogs/architecture/field-notes-how-to-scale-your-networks-on-amazon-web-services/
- - https://aws.amazon.com/blogs/industries/defining-an-aws-multi-account-strategy-for-a-digital-bank/
- - https://aws.amazon.com/blogs/security/protect-your-remote-workforce-by-using-a-managed-dns-firewall-and-network-firewall/
- - https://aws.amazon.com/blogs/architecture/field-notes-working-with-route-tables-in-aws-transit-gateway/
- - https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-isolated-shared.html
- - https://aws.amazon.com/blogs/security/simplify-dns-management-in-a-multiaccount-environment-with-route-53-resolver/
+### References
+
+* <https://aws.amazon.com/blogs/architecture/field-notes-how-to-scale-your-networks-on-amazon-web-services/>
+* <https://aws.amazon.com/blogs/industries/defining-an-aws-multi-account-strategy-for-a-digital-bank/>
+* <https://aws.amazon.com/blogs/security/protect-your-remote-workforce-by-using-a-managed-dns-firewall-and-network-firewall/>
+* <https://aws.amazon.com/blogs/architecture/field-notes-working-with-route-tables-in-aws-transit-gateway/>
+* <https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-isolated-shared.html>
+* <https://aws.amazon.com/blogs/security/simplify-dns-management-in-a-multiaccount-environment-with-route-53-resolver/>
 
 -----------------------------------------------------------
+
 ## Prerequisites
 
-**Tooling**
- - Terraform ~> 1.1
-   - AWS provider ~> 3.0
- - AWS CLI
- - Git CLI
+Minimal tooling is required for this solution. However, there are hard requirements around
+AWS configuration.
 
-**Infrastructure**
- - AWS Organization
- - Centralised network account
- - IAM role with required permissions
- - RAM sharing enabled for the Organisation
-```
+### Tooling
+
+* Terraform ~> 1.1
+  * AWS provider ~> 3.0
+* AWS CLI
+* Git CLI
+
+### AWS account configuration
+
+* AWS Organization
+* Centralised network account
+* IAM role with required permissions
+* RAM sharing enabled for the Organisation
+
+```bash
 aws ram enable-sharing-with-aws-organization
 ```
+
 ![ram](images/RAM_Enabled.png)
- - IPAM delegated from the master account to the Centralised network account
+
+IPAM delegated from the master account to the Centralised network account
 
 ![ipam](images/IPAM_Delegated.png)
 
-**Customisation**
- - If you do not define a remote backend Terraform will use the local directory to store the backend files including tfstate. Examples of how to customise the Terraform backend are included but commented out.
+### Customisation
 
- ![backend](images/backend.png)
+If you do not define a remote backend Terraform will use the local directory to store the backend files
+including tfstate. Examples of how to customise the Terraform backend are included but commented out.
+Usual caveats around safe storage of Terraform state must be considered.
 
- - Example GitLab HTTP backend for use with GitLab CI.
+![backend](images/backend.png)
+
+Example GitLab HTTP backend for use with GitLab CI.
 
  ![http_backend](images/http_backend.png)
 
@@ -89,7 +114,7 @@ aws ram enable-sharing-with-aws-organization
 
 | Type | Variable Name | Description | Notes |
 |------|---------------|---------|-------|
-| Global variables | environment | Environment to deploy into. | Accepted values - dev, test, preprod, prod |
+| Global variables | environment | Environment to deploy into. | Accepted values * dev, test, preprod, prod |
 | | aws_region | Region to deploy in. | |
 | | vpc_endpoints | List of centralised VPC endpoints to be deployed | |
 | Environment specific variables | ipam_cidr | CIDR to be allocated to the IP Address Manager | |
@@ -98,7 +123,7 @@ aws ram enable-sharing-with-aws-organization
 
 **Input Variable -** *config.auto.tfvars*
 
-```
+```terraform
 aws_region    = "eu-west-2"
 vpc_endpoints = ["ec2", "rds", "sqs", "sns", "ssm", "logs", "ssmmessages", "ec2messages", "autoscaling", "ecs", "athena"]
 
@@ -127,32 +152,36 @@ env_config = {
 ```
 
 -----------------------------------------------------------
+
 ## Quick Start
 
-### Deploy from client machine 
+### Deploy from client machine
+
 When deploying from your local machine having configured the **TF Backend** in the code you need to ensure you have access to read and write to the backend - possible backends include HTTP, Consul, Postgres, Artifactory, S3 or S3 + DynamoDB. We initialise the Terraform, complete the validate and format. Review the plan and then apply.
 
- - ``` terraform init ```
- - ``` terraform validate ```
- - set environment for deployment
-   - ``` export TF_VAR_environment=" **ENV** " ```
-   - ``` Set-Item -Path env:TF_VAR_environment -Value “ **ENV** “ ```
-       (Possible Env values - dev, test, preprod, prod)
- - ``` terraform plan ```
- - ``` terraform apply ``` **or** ``` terraform apply --auto-approve ```
+* ``` terraform init ```
+* ``` terraform validate ```
+* set environment for deployment
+  * ``` export TF_VAR_environment="$ENV" ```
+  * ``` Set-Item -Path env:TF_VAR_environment -Value "$ENV" ```
+      (Possible $ENV values - `dev`, `test`, `preprod`, `prod`)
+* ``` terraform plan ```
+* ``` terraform apply ``` **or** ``` terraform apply --auto-approve ```
 
 -----------------------------------------------------------
+
 ### Tagging
 
 Tags are added to all AWS resources through use of the tag configuration of the AWS Provider.
 
 As not all AWS resources support default tags passed from the provider (EC2 Auto-Scaling Group + Launch Template)
-We pass the tags as a variable (Map(string) - these are defined in the rott locals.tf file.
+We pass the tags as a variable (Map(string) - these are defined in the root locals.tf file.
 
 ![provider](images/provider.png)
 
 **Example Tags -** *locals.tf*
-```
+
+```terraform
 tags = {
   Product    = "Network_Automation"
   Owner      = "GitHub"
@@ -167,6 +196,7 @@ Remember to clean up after your work is complete. You can do that by doing `terr
 Note that this command will delete all the resources previously created by Terraform.
 
 ## Terraform Docs
+
 ### Terraform Deployment
 <!-- BEGIN_TF_DOCS -->
 #### Requirements
@@ -252,10 +282,10 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| az\_names | A list of the Availability Zone names available to the accoun | `list(string)` | n/a | yes |
-| cidr | corporate cidr rnage for use with blackholing traffic between production and development environments | `string` | n/a | yes |
+| az\_names | A list of the Availability Zone names available to the account | `list(string)` | n/a | yes |
+| cidr | corporate cidr range for use with blackholing traffic between production and development environments | `string` | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
-| inspection\_attachment | inspection vpc attachment for deafult route | `string` | n/a | yes |
+| inspection\_attachment | inspection vpc attachment for default route | `string` | n/a | yes |
 | org\_arn | The ARN of the AWS Organization this account belongs to | `string` | n/a | yes |
 | tgw\_route\_tables | List of route tables to create for the transit gateway | `list(string)` | n/a | yes |
 
@@ -264,7 +294,7 @@ No modules.
 | Name | Description |
 |------|-------------|
 | tgw | tgw id for attachments |
-| tgw\_route\_table | map of route tables used for association and propogation |
+| tgw\_route\_table | map of route tables used for association and propagation |
 <!-- END_TF_TGW_DOCS -->
 ### IPAM Module
 <!-- BEGIN_TF_IPAM_DOCS -->
@@ -351,13 +381,13 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| az\_names | A list of the Availability Zone names available to the accoun | `list(string)` | n/a | yes |
-| cidr | corporate cidr rnage for use with blackholing traffic between production and development environments | `string` | n/a | yes |
+| az\_names | A list of the Availability Zone names available to the account | `list(string)` | n/a | yes |
+| cidr | corporate cidr range for use with blackholing traffic between production and development environments | `string` | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | iam\_role\_arn | iam role to allow vpc flow logs to write to cloudwatch | `string` | n/a | yes |
 | interface\_endpoints | object representing the region and services to create interface endpoints for | `map(string)` | n/a | yes |
 | kms\_key\_id | vpc flow logs kms key to encrypt logs | `string` | n/a | yes |
-| org\_ipam\_pool | IPAM pool ID to allocat CIDR space | `string` | n/a | yes |
+| org\_ipam\_pool | IPAM pool ID to allocate CIDR space | `string` | n/a | yes |
 | tgw | TGW route tables for VPC attachment | `string` | n/a | yes |
 | tgw\_route\_tables | TGW route tables for VPC association and propagation | `map(string)` | n/a | yes |
 
@@ -411,14 +441,14 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| az\_names | A list of the Availability Zone names available to the accoun | `list(string)` | n/a | yes |
-| cidr | corporate cidr rnage for use with blackholing traffic between production and development environments | `string` | n/a | yes |
+| az\_names | A list of the Availability Zone names available to the account | `list(string)` | n/a | yes |
+| cidr | corporate cidr range for use with blackholing traffic between production and development environments | `string` | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | iam\_role\_arn | iam role to allow vpc flow logs to write to cloudwatch | `string` | n/a | yes |
 | interface\_endpoints | object representing the region and services to create interface endpoints for | `map(string)` | n/a | yes |
 | kms\_key\_id | vpc flow logs kms key to encrypt logs | `string` | n/a | yes |
 | org\_arn | The ARN of the AWS Organization this account belongs to | `string` | n/a | yes |
-| org\_ipam\_pool | IPAM pool ID to allocat CIDR space | `string` | n/a | yes |
+| org\_ipam\_pool | IPAM pool ID to allocate CIDR space | `string` | n/a | yes |
 | root\_domain | root domain for private hosted zone delegation | `string` | n/a | yes |
 | tgw | TGW route tables for VPC attachment | `string` | n/a | yes |
 | tgw\_route\_tables | TGW route tables for VPC association and propagation | `map(string)` | n/a | yes |
@@ -488,10 +518,10 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | aws\_region | AWS region being deployed to | `string` | n/a | yes |
-| az\_names | A list of the Availability Zone names available to the accoun | `list(string)` | n/a | yes |
-| cidr | corporate cidr rnage for use with blackholing traffic between production and development environments | `string` | n/a | yes |
+| az\_names | A list of the Availability Zone names available to the account | `list(string)` | n/a | yes |
+| cidr | corporate cidr range for use with blackholing traffic between production and development environments | `string` | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
-| org\_ipam\_pool | IPAM pool ID to allocat CIDR space | `string` | n/a | yes |
+| org\_ipam\_pool | IPAM pool ID to allocate CIDR space | `string` | n/a | yes |
 | tgw | TGW route tables for VPC attachment | `string` | n/a | yes |
 | tgw\_route\_tables | TGW route tables for VPC association and propagation | `map(string)` | n/a | yes |
 
@@ -501,7 +531,7 @@ No modules.
 |------|-------------|
 | eni\_map | n/a |
 | firewall\_info | Info of network fire for routing |
-| inspection\_attachment | inspection tgw attachemnt id for default route in tgw |
+| inspection\_attachment | inspection tgw attachment id for default route in tgw |
 | route\_table | output route tables used for NFW |
 | rt\_map | n/a |
 <!-- END_TF_NFW_DOCS -->

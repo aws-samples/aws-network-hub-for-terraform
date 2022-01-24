@@ -2,7 +2,7 @@
    SPDX-License-Identifier: MIT-0 */
 
 # output "tgw_route_table" {
-#   description = "map of route tables used for association and propogation"
+#   description = "map of route tables used for association and propagation"
 #   value       = module.tgw.tgw_route_table
 # }
 

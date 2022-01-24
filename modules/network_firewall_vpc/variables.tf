@@ -12,17 +12,17 @@ variable "aws_region" {
 }
 
 variable "az_names" {
-  description = "A list of the Availability Zone names available to the accoun"
+  description = "A list of the Availability Zone names available to the account"
   type        = list(string)
 }
 
 variable "cidr" {
-  description = "corporate cidr rnage for use with blackholing traffic between production and development environments"
+  description = "corporate cidr range for use with blackholing traffic between production and development environments"
   type        = string
 }
 
 variable "org_ipam_pool" {
-  description = "IPAM pool ID to allocat CIDR space"
+  description = "IPAM pool ID to allocate CIDR space"
   type        = string
 }
 
