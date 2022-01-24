@@ -41,7 +41,6 @@ VPC Endpoints
 ![vpc_endpoints](images/vpce.png)
 
 Network Firewall
-
 ![nfw](images/nfw.png)
 
 Route 53 Resolver
