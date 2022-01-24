@@ -3,7 +3,7 @@
 
 output "inspection_attachment" {
   value       = aws_ec2_transit_gateway_vpc_attachment.vpc_inspection.id
-  description = "inspection tgw attachemnt id for default route in tgw"
+  description = "inspection tgw attachment id for default route in tgw"
 }
 
 output "firewall_info" {

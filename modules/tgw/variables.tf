@@ -12,17 +12,17 @@ variable "org_arn" {
 }
 
 variable "az_names" {
-  description = "A list of the Availability Zone names available to the accoun"
+  description = "A list of the Availability Zone names available to the account"
   type        = list(string)
 }
 
 variable "cidr" {
-  description = "corporate cidr rnage for use with blackholing traffic between production and development environments"
+  description = "corporate cidr range for use with blackholing traffic between production and development environments"
   type        = string
 }
 
 variable "inspection_attachment" {
-  description = "inspection vpc attachment for deafult route"
+  description = "inspection vpc attachment for default route"
   type        = string
 }
 

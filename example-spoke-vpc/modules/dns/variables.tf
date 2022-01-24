@@ -32,6 +32,6 @@ variable "network_hub_account_number" {
 }
 
 variable "centralised_vpc_endpoints" {
-  description = "Which centralsied VPC endpoints to consume"
+  description = "Which centralised VPC endpoints to consume"
   type        = map(string)
 }

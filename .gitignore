@@ -40,3 +40,6 @@ keys/
 # TFLINT
 
 .tflint.hcl
+
+# vscode
+.vscode

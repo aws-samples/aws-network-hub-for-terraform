@@ -26,6 +26,6 @@ variable "vpc_endpoints" {
 }
 
 variable "centralised_vpc_endpoints" {
-  description = "Which centralsied VPC endpoints to consume"
+  description = "Which centralised VPC endpoints to consume"
   type        = list(string)
 }

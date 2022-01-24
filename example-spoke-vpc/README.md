@@ -1,35 +1,42 @@
+<!-- markdownlint-disable MD033 MD024 MD001 -->
 # Network Spoke Account with Terraform
+
+## Overview
+
+This example demonstrates a matching spoke VPC that is **consistent, cost efficient and automatable** to join to the example hub account to consume centralised network services.
+
+* Consistent: allows reasoning about all of your AWS organization's network state
+* Cost efficient: Removes requirement for per-VPC NAT Gateway and VPC Endpoints
+* Automatable: Simple VPC deployment can be tied in to other processes such as account creation automation.
+
+The following resources will be deployed by this example:
+
+* a VPC with a CIDR assigned by AWS VPC IP Address Manager
+* 3 Endpoint Subnets
+* 3 Private Subnets
+* Local VPC Endpoints
+* TGW Attachment, Association and Propagation
+* Route 53 Resolver Rule Association
+* Private Hosted Zone
+
+The resources deployed and the architectural pattern they follow are provided for demonstration and
+testing purposes but are based on and inspired by AWS best practice and articles.
 
 ## Table of Contents
 
-- [Overview](#overview)
-  - [Diagrams](#diagrams)
-  - [Useful Links](#useful-links)
-- [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
-  - [Deploy from client machine](#deploy-from-client-machine)
-  - [Validate Deployment](#validate-deployment)
-  - [Tagging](#tagging)
-  - [clean Up](#clean-up)
-- [Terraform Docs](#terraform-docs)
-
-## Overview
-This repository contains terraform code to deploy a sample resources into an spoke account that consumes centralised network services form the network hub account. The resources deployed and the architectural pattern they follow is purely for demonstration/testing  purposes.
-
-Enterprise architecture can include many services combined to achieve a large and secure networks.
-
-**To deploy a full hub and spoke topology please deploy the hub account for the spoke account to be able to consume centralised network services.**
-
-The following resources will be deployed:
- - VPC
- - 3 Endpoint Subnets
- - 3 Private Subnets
- - Local VPC Endpoints
- - TGW Attachment, Association and Propagation
- - Route 53 Resolver Rule Association
- - Private Hosted Zone
+* [Overview](#overview)
+  * [Diagrams](#diagrams)
+  * [Useful Links](#useful-links)
+* [Prerequisites](#prerequisites)
+* [Quick Start](#quick-start)
+  * [Deploy from client machine](#deploy-from-client-machine)
+  * [Validate Deployment](#validate-deployment)
+  * [Tagging](#tagging)
+  * [clean Up](#clean-up)
+* [Terraform Docs](#terraform-docs)
 
 ### Diagrams
+
 Solution Diagram
 ![diagram](images/diagram.png)
 
@@ -46,45 +53,49 @@ Route 53 Resolver
 ![dns](images/dns.png)
 
 ### Useful Links
- - https://aws.amazon.com/blogs/architecture/field-notes-how-to-scale-your-networks-on-amazon-web-services/
- - https://aws.amazon.com/blogs/industries/defining-an-aws-multi-account-strategy-for-a-digital-bank/
- - https://aws.amazon.com/blogs/security/protect-your-remote-workforce-by-using-a-managed-dns-firewall-and-network-firewall/
- - https://aws.amazon.com/blogs/architecture/field-notes-working-with-route-tables-in-aws-transit-gateway/
- - https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-isolated-shared.html
- - https://aws.amazon.com/blogs/security/simplify-dns-management-in-a-multiaccount-environment-with-route-53-resolver/
+
+* <https://aws.amazon.com/blogs/architecture/field-notes-how-to-scale-your-networks-on-amazon-web-services/>
+* <https://aws.amazon.com/blogs/industries/defining-an-aws-multi-account-strategy-for-a-digital-bank/>
+* <https://aws.amazon.com/blogs/security/protect-your-remote-workforce-by-using-a-managed-dns-firewall-and-network-firewall/>
+* <https://aws.amazon.com/blogs/architecture/field-notes-working-with-route-tables-in-aws-transit-gateway/>
+* <https://docs.aws.amazon.com/vpc/latest/tgw/transit-gateway-isolated-shared.html>
+* <https://aws.amazon.com/blogs/security/simplify-dns-management-in-a-multiaccount-environment-with-route-53-resolver/>
 
 -----------------------------------------------------------
 
 ## Prerequisites
 
-**Tooling**
- - Terraform ~> 1.1
-   - AWS provider ~> 3.0
- - AWS CLI
- - Git CLI
+### Tooling
 
-**Infrastructure**
- - AWS Organization
-   - RAM enabled to Org
-   - IPAM delegated to network hub account
- - Centralised network account with [Hub Solution](https://gitlab.aws.dev/aandsco/network-hub-terraform) deployed
- - Spoke account to deploy into
- - IAM role with required permissions
-   - **Tag all roles with automation = true**
+* Terraform ~> 1.1
+  * AWS provider ~> 3.0
+* AWS CLI
+* Git CLI
+
+### Infrastructure
+
+* AWS Organization
+  * RAM enabled to Org
+  * IPAM delegated to network hub account
+* Centralised network account with [Hub Solution](https://gitlab.aws.dev/aandsco/network-hub-terraform) deployed
+* Spoke account to deploy into
+* IAM role with required permissions
+  * **Tag all roles with automation = true**
 
 ![iam_tag](images/iam_tag.png)
 
 **Customisation**
- - If you do not define a remote backend Terraform will use the local directory to store the local backend files including tfstate. Examples of how to customise the Terraform backend are included but commented out.
+If you do not define a remote backend Terraform will use the local directory to store the local backend files including tfstate. Examples of how to customise the Terraform backend are included but commented out.
 
  ![backend](images/backend.png)
 
- - Example GitLab HTTP backend for use with GitLab CI.
+Example GitLab HTTP backend for use with GitLab CI.
 
  ![http_backend](images/http_backend.png)
 
- - Update network hub account ID in **config.auto.tfvars** per environment.
- ```
+Update network hub account ID in **config.auto.tfvars** per environment.
+
+ ```terraform
 aws_region                = "eu-west-2"
 vpc_endpoints             = ["s3"]
 centralised_vpc_endpoints = ["ec2", "rds", "sqs", "sns", "ssm", "logs", "ssmmessages", "ec2messages", "autoscaling", "ecs", "athena"]
@@ -117,17 +128,18 @@ env_config = {
 
 ## Quick Start
 
-### Deploy from client machine 
+### Deploy from client machine
+
 When deploying from your local machine having configured the **TF Backend** in the code you need to ensure you have access to read and write to the backend - possible backends include HTTP, Consul, Postgres, Artifactory, S3 or S3 + DynamoDB. We initialise the Terraform, complete the validate and format. Review the plan and then apply.
 
- - ``` terraform init ```
- - ``` terraform validate ```
- - set environment for deployment
-   - ``` export TF_VAR_environment=" **ENV** " ```
-   - ``` Set-Item -Path env:TF_VAR_environment -Value “ **ENV** “ ```
-       (Possible Env values - dev, test, preprod, prod)
- - ``` terraform plan ```
- - ``` terraform apply ``` **or** ``` terraform apply --auto-approve ```
+* ``` terraform init ```
+* ``` terraform validate ```
+* set environment for deployment
+  * ``` export TF_VAR_environment=" **ENV** " ```
+  * ``` Set-Item -Path env:TF_VAR_environment -Value “ **ENV** “ ```
+      (Possible Env values * dev, test, preprod, prod)
+* ``` terraform plan ```
+* ``` terraform apply ``` **or** ``` terraform apply --auto-approve ```
 
 -----------------------------------------------------------
 
@@ -136,12 +148,13 @@ When deploying from your local machine having configured the **TF Backend** in t
 Tags are added to all AWS resources through use of the tag configuration of the AWS Provider.
 
 As not all AWS resources support default tags passed from the provider (EC2 Auto-Scaling Group + Launch Template)
-We pass the tags as a variable (Map(string) - these are defined in the rott locals.tf file.
+We pass the tags as a variable (Map(string) - these are defined in the root locals.tf file.
 
 ![provider](images/provider.png)
 
 **Example Tags -** *locals.tf*
-```
+
+```terraform
 tags = {
   Product    = "Network_Automation"
   Owner      = "GitHub"
@@ -158,6 +171,7 @@ Note that this command will delete all the resources previously created by Terra
 ## Terraform Docs
 
 <!-- BEGIN_TF_DOCS -->
+
 #### Requirements
 
 | Name | Version |
@@ -193,7 +207,7 @@ Note that this command will delete all the resources previously created by Terra
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | aws\_region | AWS region being deployed to | `string` | n/a | yes |
-| centralised\_vpc\_endpoints | Which centralsied VPC endpoints to consume | `list(string)` | n/a | yes |
+| centralised\_vpc\_endpoints | Which centralised VPC endpoints to consume | `list(string)` | n/a | yes |
 | env\_config | Map of objects for per environment configuration | <pre>map(object({<br>    network_hub_account_number = string<br>    tgw_route_tables           = list(string)<br>    root_domain                = string<br>  }))</pre> | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | vpc\_endpoints | Which local VPC endpoints to deploy | `list(string)` | n/a | yes |
@@ -256,7 +270,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | aws\_region | AWS region being deployed to | `string` | n/a | yes |
-| az\_names | A list of the Availability Zone names available to the accoun | `list(string)` | n/a | yes |
+| az\_names | A list of the Availability Zone names available to the account | `list(string)` | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | interface\_endpoints | object representing the region and services to create interface endpoints for | `map(string)` | n/a | yes |
 | network\_hub\_account\_number | Network Hub account ID | `string` | n/a | yes |
@@ -314,7 +328,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | aws\_region | AWS region being deployed to | `string` | n/a | yes |
-| centralised\_vpc\_endpoints | Which centralsied VPC endpoints to consume | `map(string)` | n/a | yes |
+| centralised\_vpc\_endpoints | Which centralised VPC endpoints to consume | `map(string)` | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | network\_hub\_account\_number | Network Hub account ID | `string` | n/a | yes |
 | root\_domain | rootdomain for the delegated private hosted zone | `string` | n/a | yes |

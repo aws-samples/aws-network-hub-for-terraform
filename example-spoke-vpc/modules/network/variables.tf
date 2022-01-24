@@ -7,7 +7,7 @@ variable "environment" {
 }
 
 variable "az_names" {
-  description = "A list of the Availability Zone names available to the accoun"
+  description = "A list of the Availability Zone names available to the account"
   type        = list(string)
 }
 
