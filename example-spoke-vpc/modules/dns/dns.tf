@@ -1,6 +1,6 @@
 /* Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
    SPDX-License-Identifier: MIT-0 */
-   
+
 resource "aws_route53_zone" "delegated_private" {
   name = "${data.aws_caller_identity.current.account_id}.${var.root_domain}"
 

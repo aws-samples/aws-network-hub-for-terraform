@@ -10,7 +10,7 @@ resource "aws_flow_log" "vpc" {
 
 resource "aws_cloudwatch_log_group" "flow_logs" {
   name              = "endpoint_vpc"
-  retention_in_days = 90
+  retention_in_days = 7
   kms_key_id        = var.kms_key_id
 }
 

@@ -16,7 +16,7 @@ resource "aws_default_security_group" "default" {
 }
 
 resource "aws_flow_log" "vpc" {
-  iam_role_arn    = aws_iam_role.flow_logs.arn
+  iam_role_arn    = var.iam_role_arn
   log_destination = aws_cloudwatch_log_group.flow_logs.arn
   traffic_type    = "ALL"
   vpc_id          = aws_vpc.inspection_vpc.id
@@ -24,53 +24,53 @@ resource "aws_flow_log" "vpc" {
 
 resource "aws_cloudwatch_log_group" "flow_logs" {
   name              = "inspection_vpc"
-  kms_key_id        = aws_kms_key.log_key.arn
+  kms_key_id        = var.kms_key_id
   retention_in_days = 7
 }
 
-resource "aws_iam_role" "flow_logs" {
-  name = "inspection_vpc_flow_logs"
+# resource "aws_iam_role" "flow_logs" {
+#   name = "inspection_vpc_flow_logs"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "vpc-flow-logs.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
-}
+#   assume_role_policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Sid": "",
+#       "Effect": "Allow",
+#       "Principal": {
+#         "Service": "vpc-flow-logs.amazonaws.com"
+#       },
+#       "Action": "sts:AssumeRole"
+#     }
+#   ]
+# }
+# EOF
+# }
 
-resource "aws_iam_role_policy" "flow_logs" {
-  name = "inspection_vpc_flow_logs"
-  role = aws_iam_role.flow_logs.id
+# resource "aws_iam_role_policy" "flow_logs" {
+#   name = "inspection_vpc_flow_logs"
+#   role = aws_iam_role.flow_logs.id
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents",
-        "logs:DescribeLogGroups",
-        "logs:DescribeLogStreams"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
+#   policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Action": [
+#         "logs:CreateLogGroup",
+#         "logs:CreateLogStream",
+#         "logs:PutLogEvents",
+#         "logs:DescribeLogGroups",
+#         "logs:DescribeLogStreams"
+#       ],
+#       "Effect": "Allow",
+#       "Resource": "*"
+#     }
+#   ]
+# }
+# EOF
+# }
 
 # Attachment subnets
 

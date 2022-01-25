@@ -35,3 +35,13 @@ variable "tgw" {
   description = "TGW route tables for VPC attachment"
   type        = string
 }
+
+variable "kms_key_id" {
+  description = "vpc flow logs kms key to encrypt logs"
+  type        = string
+}
+
+variable "iam_role_arn" {
+  description = "iam role to allow vpc flow logs to write to cloudwatch"
+  type        = string
+}

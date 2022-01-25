@@ -28,7 +28,7 @@ resource "aws_vpc_endpoint" "interface" {
   service_name        = each.key
   vpc_id              = aws_vpc.endpoint_vpc.id
   private_dns_enabled = false
-  subnet_ids          = [for s in aws_subnet.privatesubnet : s.id]
+  subnet_ids          = [for s in aws_subnet.endpoint_subnet : s.id]
   security_group_ids  = ["${aws_security_group.allow_vpc_endpoint.id}"]
   tags = {
     Name = each.key
@@ -36,7 +36,7 @@ resource "aws_vpc_endpoint" "interface" {
   }
   vpc_endpoint_type = "Interface"
   depends_on = [
-    aws_subnet.privatesubnet
+    aws_subnet.endpoint_subnet
   ]
 }
 

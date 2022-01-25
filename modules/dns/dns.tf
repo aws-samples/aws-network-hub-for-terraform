@@ -40,7 +40,7 @@ resource "aws_route53_resolver_endpoint" "inbound" {
   ]
 
   dynamic "ip_address" {
-    for_each = aws_subnet.privatesubnet
+    for_each = aws_subnet.endpoint_subnet
 
     content {
       subnet_id = ip_address.value.id
@@ -60,7 +60,7 @@ resource "aws_route53_resolver_endpoint" "outbound" {
   ]
 
   dynamic "ip_address" {
-    for_each = aws_subnet.privatesubnet
+    for_each = aws_subnet.endpoint_subnet
 
     content {
       subnet_id = ip_address.value.id

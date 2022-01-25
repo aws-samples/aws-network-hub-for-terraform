@@ -1,8 +1,6 @@
 <!-- markdownlint-disable MD033 MD024 -->
 # Network Hub Account with Terraform
 
-## Overview
-
 This repository demonstrates a **scalable, segregated, secured** AWS network for **multi-account organizations**.
 Using Transit Gateway to separate production, non-production and shared services traffic,
 it deploys an advanced AWS networking pattern using centralized ingress and egress behind Network Firewall,
@@ -40,6 +38,8 @@ testing purposes but are based on and inspired by AWS best practice and articles
 * [Terraform Docs](#terraform-docs)
 * [Security](#security)
 * [License](#license)
+
+## Overview
 
 ### Diagrams
 
@@ -94,7 +94,12 @@ aws ram enable-sharing-with-aws-organization
 
 ![ram](images/RAM_Enabled.png)
 
-IPAM delegated from the master account to the Centralised network account
+* IPAM delegated from the master account to the Centralised network account
+
+```bash
+aws ec2 enable-ipam-organization-admin-account \
+    --delegated-admin-account-id <Network-Account-ID>
+```
 
 ![ipam](images/IPAM_Delegated.png)
 

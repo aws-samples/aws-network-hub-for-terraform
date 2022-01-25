@@ -4,9 +4,8 @@
 module "ipam" {
   source     = "./modules/ipam"
   ipam_cidr  = local.config.ipam_cidr
-  aws_region = var.aws_region
   org_arn    = local.aws_org_arn
-
+  aws_region = var.aws_region
 }
 
 module "tgw" {
@@ -14,23 +13,22 @@ module "tgw" {
   inspection_attachment = module.network_firewall_vpc.inspection_attachment
   tgw_route_tables      = local.config.tgw_route_tables
   cidr                  = local.config.ipam_cidr
-  environment           = var.environment
   az_names              = local.availability_zone_names
   org_arn               = local.aws_org_arn
+  environment           = var.environment
 }
 
 module "vpc_endpoints" {
   source              = "./modules/vpc_endpoints"
-  az_names            = local.availability_zone_names
+  kms_key_id          = aws_kms_key.log_key.arn
+  iam_role_arn        = aws_iam_role.flow_logs.arn
   tgw_route_tables    = module.tgw.tgw_route_table
   tgw                 = module.tgw.tgw
   org_ipam_pool       = module.ipam.org_ipam_pool
   cidr                = local.config.ipam_cidr
   interface_endpoints = local.endpoints
+  az_names            = local.availability_zone_names
   environment         = var.environment
-  kms_key_id          = aws_kms_key.log_key.arn
-  iam_role_arn        = aws_iam_role.flow_logs.arn
-
   depends_on = [
     module.ipam,
     module.tgw
@@ -39,17 +37,17 @@ module "vpc_endpoints" {
 
 module "dns" {
   source              = "./modules/dns"
+  kms_key_id          = aws_kms_key.log_key.arn
+  iam_role_arn        = aws_iam_role.flow_logs.arn
   tgw_route_tables    = module.tgw.tgw_route_table
   tgw                 = module.tgw.tgw
   org_ipam_pool       = module.ipam.org_ipam_pool
   cidr                = local.config.ipam_cidr
-  interface_endpoints = local.endpoints
   root_domain         = local.config.root_domain
-  environment         = var.environment
+  interface_endpoints = local.endpoints
   az_names            = local.availability_zone_names
   org_arn             = local.aws_org_arn
-  kms_key_id          = aws_kms_key.log_key.arn
-  iam_role_arn        = aws_iam_role.flow_logs.arn
+  environment         = var.environment
   depends_on = [
     module.ipam,
     module.tgw
@@ -58,13 +56,15 @@ module "dns" {
 
 module "network_firewall_vpc" {
   source           = "./modules/network_firewall_vpc"
+  kms_key_id       = aws_kms_key.log_key.arn
+  iam_role_arn     = aws_iam_role.flow_logs.arn
   tgw_route_tables = module.tgw.tgw_route_table
   tgw              = module.tgw.tgw
   org_ipam_pool    = module.ipam.org_ipam_pool
   cidr             = local.config.ipam_cidr
+  az_names         = local.availability_zone_names
   environment      = var.environment
   aws_region       = var.aws_region
-  az_names         = local.availability_zone_names
   depends_on = [
     module.ipam
   ]
@@ -72,7 +72,7 @@ module "network_firewall_vpc" {
 
 resource "aws_iam_role" "central_network" {
   #checkov:skip=CKV_AWS_60: Automation role - requires Org perm with additional tag based condition for sample only
-  name = "network_automation_role"
+  name               = "network_automation_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
