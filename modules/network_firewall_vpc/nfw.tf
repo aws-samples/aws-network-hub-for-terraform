@@ -17,49 +17,6 @@ resource "aws_networkfirewall_firewall" "inspection_vpc_network_firewall" {
 
 }
 
-# # Creat a KMS key for CloudWatch Log encryption
-# resource "aws_kms_key" "log_key" {
-#   description             = "KMS Logs Key"
-#   deletion_window_in_days = 7
-#   enable_key_rotation     = true
-#   policy                  = data.aws_iam_policy_document.policy_kms_logs_document.json
-#   tags = {
-#     Name = "kms-key-nfw-${var.environment}"
-#   }
-# }
-
-# data "aws_caller_identity" "current" {}
-
-# data "aws_iam_policy_document" "policy_kms_logs_document" {
-#   #checkov:skip=CKV_AWS_109: KMS key policy to delegate permissions to IAM
-#   #checkov:skip=CKV_AWS_111: KMS key policy to delegate permissions to IAM
-#   statement {
-#     sid       = "Enable IAM User Permissions"
-#     actions   = ["kms:*"]
-#     resources = ["*"]
-#     principals {
-#       type        = "AWS"
-#       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-#     }
-#   }
-
-#   statement {
-#     sid = "Enable KMS to be used by CloudWatch Logs"
-#     actions = [
-#       "kms:Encrypt*",
-#       "kms:Decrypt*",
-#       "kms:ReEncrypt*",
-#       "kms:GenerateDataKey*",
-#       "kms:Describe*"
-#     ]
-#     resources = ["*"]
-#     principals {
-#       type        = "Service"
-#       identifiers = ["logs.${var.aws_region}.amazonaws.com"]
-#     }
-#   }
-# }
-
 # Create a Cloudwatch Log Group for AWS Network Firewall Alerts
 resource "aws_cloudwatch_log_group" "network_firewall_alert_log_group" {
   name              = "/aws/network-firewall/alerts"
