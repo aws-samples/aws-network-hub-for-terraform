@@ -28,50 +28,6 @@ resource "aws_cloudwatch_log_group" "flow_logs" {
   retention_in_days = 7
 }
 
-# resource "aws_iam_role" "flow_logs" {
-#   name = "inspection_vpc_flow_logs"
-
-#   assume_role_policy = <<EOF
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Sid": "",
-#       "Effect": "Allow",
-#       "Principal": {
-#         "Service": "vpc-flow-logs.amazonaws.com"
-#       },
-#       "Action": "sts:AssumeRole"
-#     }
-#   ]
-# }
-# EOF
-# }
-
-# resource "aws_iam_role_policy" "flow_logs" {
-#   name = "inspection_vpc_flow_logs"
-#   role = aws_iam_role.flow_logs.id
-
-#   policy = <<EOF
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Action": [
-#         "logs:CreateLogGroup",
-#         "logs:CreateLogStream",
-#         "logs:PutLogEvents",
-#         "logs:DescribeLogGroups",
-#         "logs:DescribeLogStreams"
-#       ],
-#       "Effect": "Allow",
-#       "Resource": "*"
-#     }
-#   ]
-# }
-# EOF
-# }
-
 # Attachment subnets
 
 resource "aws_route_table" "attachment" {
