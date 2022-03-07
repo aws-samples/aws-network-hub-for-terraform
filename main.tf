@@ -72,7 +72,7 @@ module "network_firewall_vpc" {
 
 resource "aws_iam_role" "central_network" {
   #checkov:skip=CKV_AWS_60: Automation role - requires Org perm with additional tag based condition for sample only
-  name               = "network_automation_role"
+  name               = "${var.environment}_network_automation_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -102,9 +102,9 @@ EOF
 }
 
 resource "aws_iam_policy" "central_network" {
-  name        = "central_network_automation_policy"
+  name        = "${var.environment}_central_network_automation_policy"
   path        = "/"
-  description = "Central network automation policy to allow TGW association, propagation and route53 private hosted zone association"
+  description = "${var.environment} Central network automation policy to allow TGW association, propagation and route53 private hosted zone association"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -164,7 +164,7 @@ resource "aws_iam_policy_attachment" "central_network" {
 }
 
 resource "aws_iam_role" "flow_logs" {
-  name = "endpoint_vpc_flow_logs"
+  name = "${var.environment}_endpoint_vpc_flow_logs"
 
   assume_role_policy = <<EOF
 {
