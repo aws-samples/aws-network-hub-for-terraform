@@ -24,3 +24,8 @@ variable "vpc_endpoints" {
   description = "Which VPC endpoints to use"
   type        = list(string)
 }
+
+variable "tags" {
+  description = "Default tags to apply to all resources"
+  type        = map(string)
+}
