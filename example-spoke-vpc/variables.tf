@@ -29,3 +29,8 @@ variable "centralised_vpc_endpoints" {
   description = "Which centralised VPC endpoints to consume"
   type        = list(string)
 }
+
+variable "tags" {
+  description = "Default tags to apply to all resources"
+  type        = map(string)
+}
