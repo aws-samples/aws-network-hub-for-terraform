@@ -6,12 +6,12 @@ locals {
 }
 
 locals {
-  tags = {
-    Product    = "Network_Automation"
-    Owner      = "WWPS"
-    Project_ID = "12345"
-    Env        = var.environment
-  }
+  tags = merge(
+    var.tags,
+    {
+      Env = var.environment
+    },
+  )
 
   availability_zone_names = data.aws_availability_zones.available.names
   endpoints               = { for e in var.vpc_endpoints : "com.amazonaws.${var.aws_region}.${e}" => "${e}.${var.aws_region}.amazonaws.com" }

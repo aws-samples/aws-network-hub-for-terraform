@@ -15,7 +15,7 @@ provider "aws" {
   alias  = "network_hub"
   region = var.aws_region
   assume_role {
-    role_arn = "arn:aws:iam::${var.network_hub_account_number}:role/network_automation_role"
+    role_arn = "arn:aws:iam::${var.network_hub_account_number}:role/${var.environment}_network_automation_role"
     # Declaring a session name
     session_name = "network_hub"
   }
