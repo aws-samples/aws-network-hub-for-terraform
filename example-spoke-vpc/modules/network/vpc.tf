@@ -55,16 +55,16 @@ resource "aws_subnet" "endpoint_subnet" {
   enable_dns64                                   = true
   enable_resource_name_dns_a_record_on_launch    = true
   enable_resource_name_dns_aaaa_record_on_launch = true
-  lifecycle {
-    ignore_changes = [
-      availability_zone
-    ]
-  }
-
   tags = {
     Name    = format("spoke_endpoint_%s", each.value.az)
     Network = "private"
     Type    = "endpoint"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      availability_zone
+    ]
   }
 }
 
@@ -120,6 +120,12 @@ resource "aws_subnet" "app_subnet" {
   enable_dns64                                   = true
   enable_resource_name_dns_a_record_on_launch    = true
   enable_resource_name_dns_aaaa_record_on_launch = true
+  tags = {
+    Name    = format("spoke_app_%s", each.value.az)
+    Network = "private"
+    Type    = "app"
+  }
+
   lifecycle {
     ignore_changes = [
       availability_zone
