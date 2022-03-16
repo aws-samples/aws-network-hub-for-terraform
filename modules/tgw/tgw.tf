@@ -55,3 +55,11 @@ resource "aws_ec2_transit_gateway_route" "default_route" {
   blackhole                      = false
   transit_gateway_route_table_id = each.value.id
 }
+
+resource "aws_ec2_transit_gateway_route" "default_route_ipv6" {
+  for_each                       = aws_ec2_transit_gateway_route_table.org_tgw
+  destination_cidr_block         = "::/0"
+  transit_gateway_attachment_id  = var.inspection_attachment
+  blackhole                      = false
+  transit_gateway_route_table_id = each.value.id
+}
