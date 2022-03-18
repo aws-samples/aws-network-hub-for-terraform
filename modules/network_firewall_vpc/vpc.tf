@@ -2,13 +2,28 @@
    SPDX-License-Identifier: MIT-0 */
 
 resource "aws_vpc" "inspection_vpc" {
-  ipv4_ipam_pool_id    = var.org_ipam_pool
-  ipv4_netmask_length  = 22
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+  ipv4_ipam_pool_id                = var.org_ipam_pool
+  ipv4_netmask_length              = 22
+  enable_dns_support               = true
+  enable_dns_hostnames             = true
+  assign_generated_ipv6_cidr_block = true
   tags = {
     Name = "inspection_vpc"
   }
+}
+
+resource "aws_vpc_dhcp_options" "inspection_vpc" {
+  domain_name_servers = ["AmazonProvidedDNS"]
+  ntp_servers         = ["169.254.169.123", "fd00:ec2::123"]
+
+  tags = {
+    Name = "inspection_dhcp_options"
+  }
+}
+
+resource "aws_vpc_dhcp_options_association" "inspection_vpc" {
+  vpc_id          = aws_vpc.inspection_vpc.id
+  dhcp_options_id = aws_vpc_dhcp_options.inspection_vpc.id
 }
 
 resource "aws_default_security_group" "default" {
@@ -34,7 +49,9 @@ resource "aws_route_table" "attachment" {
   for_each = local.attachment_subnet
   vpc_id   = aws_vpc.inspection_vpc.id
   tags = {
-    Name = "attachment_route_table_${each.key}"
+    Name    = format("inspection_attachment_%s", each.value.az)
+    Network = "private"
+    Type    = "attachment"
   }
 }
 
@@ -46,12 +63,30 @@ resource "aws_route" "default_route" {
   vpc_endpoint_id = local.eni_lookup[each.key]
 }
 
+resource "aws_route" "default_route_ipv6" {
+  for_each                    = local.attachment_subnet
+  route_table_id              = local.attachment_rt_lookup[each.key]
+  destination_ipv6_cidr_block = "::/0"
+  egress_only_gateway_id      = aws_egress_only_internet_gateway.eigw.id
+}
 
 resource "aws_subnet" "attachment_subnet" {
-  for_each          = local.attachment_subnet
-  vpc_id            = aws_vpc.inspection_vpc.id
-  cidr_block        = each.value.subnet
-  availability_zone = each.value.az
+  for_each = local.attachment_subnet
+
+  vpc_id                                         = aws_vpc.inspection_vpc.id
+  cidr_block                                     = each.value.subnet
+  ipv6_cidr_block                                = each.value.subnet_ipv6
+  availability_zone                              = each.value.az
+  assign_ipv6_address_on_creation                = true
+  enable_dns64                                   = true
+  enable_resource_name_dns_a_record_on_launch    = true
+  enable_resource_name_dns_aaaa_record_on_launch = true
+  tags = {
+    Name    = format("inspection_attachment_%s", each.value.az)
+    Network = "private"
+    Type    = "attachment"
+  }
+
   lifecycle {
     ignore_changes = [
       availability_zone
@@ -70,6 +105,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "vpc_inspection" {
   transit_gateway_id                              = var.tgw
   vpc_id                                          = aws_vpc.inspection_vpc.id
   dns_support                                     = "enable"
+  ipv6_support                                    = "enable"
   transit_gateway_default_route_table_association = false
   transit_gateway_default_route_table_propagation = false
 }
@@ -98,15 +134,29 @@ resource "aws_route_table" "inspection" {
   for_each = local.inspection_subnet
   vpc_id   = aws_vpc.inspection_vpc.id
   tags = {
-    Name = "inspection_route_table"
+    Name    = format("inspection_inspection_%s", each.value.az)
+    Network = "private"
+    Type    = "inspection"
   }
 }
 
 resource "aws_subnet" "inspection_subnet" {
-  for_each          = local.inspection_subnet
-  vpc_id            = aws_vpc.inspection_vpc.id
-  cidr_block        = each.value.subnet
-  availability_zone = each.value.az
+  for_each = local.inspection_subnet
+
+  vpc_id                                         = aws_vpc.inspection_vpc.id
+  cidr_block                                     = each.value.subnet
+  ipv6_cidr_block                                = each.value.subnet_ipv6
+  availability_zone                              = each.value.az
+  assign_ipv6_address_on_creation                = true
+  enable_dns64                                   = true
+  enable_resource_name_dns_a_record_on_launch    = true
+  enable_resource_name_dns_aaaa_record_on_launch = true
+  tags = {
+    Name    = format("inspection_inspection_%s", each.value.az)
+    Network = "private"
+    Type    = "inspection"
+  }
+
   lifecycle {
     ignore_changes = [
       availability_zone
@@ -137,23 +187,50 @@ resource "aws_route" "inspection_route" {
   nat_gateway_id         = aws_nat_gateway.internet[each.key].id
 }
 
+resource "aws_route" "inspection_route_natgw_ipv6" {
+  for_each                    = local.inspection_subnet
+  route_table_id              = aws_route_table.inspection[each.key].id
+  destination_ipv6_cidr_block = "64:ff9b::/96"
+  nat_gateway_id              = aws_nat_gateway.internet[each.key].id
+}
+
+resource "aws_route" "inspection_route_ipv6" {
+  for_each                    = local.inspection_subnet
+  route_table_id              = aws_route_table.inspection[each.key].id
+  destination_ipv6_cidr_block = "::/0"
+  egress_only_gateway_id      = aws_egress_only_internet_gateway.eigw.id
+}
+
 # Ingress + Egress subnets
 
 resource "aws_route_table" "internet" {
   for_each = local.internet_subnet
   vpc_id   = aws_vpc.inspection_vpc.id
   tags = {
-    Name = "internet_route_table_${each.key}"
+    Name    = format("inspection_internet_%s", each.value.az)
+    Network = "public"
+    Type    = "internet"
   }
 }
 
 resource "aws_subnet" "internet_subnet" {
   #checkov:skip=CKV_AWS_130: Public subnets used for NFW Ingress + Egress
-  for_each                = local.internet_subnet
-  vpc_id                  = aws_vpc.inspection_vpc.id
-  cidr_block              = each.value.subnet
-  availability_zone       = each.value.az
-  map_public_ip_on_launch = true
+  for_each = local.internet_subnet
+
+  vpc_id                                         = aws_vpc.inspection_vpc.id
+  cidr_block                                     = each.value.subnet
+  ipv6_cidr_block                                = each.value.subnet_ipv6
+  availability_zone                              = each.value.az
+  enable_dns64                                   = true
+  enable_resource_name_dns_a_record_on_launch    = true
+  enable_resource_name_dns_aaaa_record_on_launch = true
+  map_public_ip_on_launch                        = true
+  tags = {
+    Name    = format("inspection_internet_%s", each.value.az)
+    Network = "public"
+    Type    = "internet"
+  }
+
   lifecycle {
     ignore_changes = [
       availability_zone
@@ -184,15 +261,33 @@ resource "aws_route" "egress_route" {
   ]
 }
 
+resource "aws_route" "egress_route_ipv6" {
+  for_each                    = aws_route_table.internet
+  route_table_id              = each.value.id
+  destination_ipv6_cidr_block = "::/0"
+  egress_only_gateway_id      = aws_egress_only_internet_gateway.eigw.id
+  depends_on = [
+    aws_ec2_transit_gateway_vpc_attachment.vpc_inspection
+  ]
+}
+
 resource "aws_eip" "internet_vpc_nat" {
   for_each = local.inspection_subnet
   #checkov:skip=CKV2_AWS_19: EIP Used to for NAT Gateway
 }
 
 resource "aws_nat_gateway" "internet" {
-  for_each      = local.internet_subnet
+  for_each = local.internet_subnet
+
   allocation_id = aws_eip.internet_vpc_nat[each.key].id
   subnet_id     = aws_subnet.internet_subnet[each.key].id
+
+  tags = {
+    Name    = format("inspection_natgw_%s", each.value.az)
+    Network = "public"
+    Type    = "internet"
+  }
+
   depends_on = [
     aws_internet_gateway.igw
   ]
@@ -200,4 +295,14 @@ resource "aws_nat_gateway" "internet" {
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.inspection_vpc.id
+  tags = {
+    Name = "inspection_igw"
+  }
+}
+
+resource "aws_egress_only_internet_gateway" "eigw" {
+  vpc_id = aws_vpc.inspection_vpc.id
+  tags = {
+    Name = "inspection_eigw"
+  }
 }
