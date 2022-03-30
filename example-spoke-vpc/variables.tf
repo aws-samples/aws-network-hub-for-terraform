@@ -34,3 +34,15 @@ variable "tags" {
   description = "Default tags to apply to all resources"
   type        = map(string)
 }
+
+variable "vpc_name" {
+  description = "Name of the VPC"
+  type        = string
+  default     = "spoke"
+}
+
+variable "az_count" {
+  description = "Number of availability zones"
+  type        = number
+  default     = 2
+}
