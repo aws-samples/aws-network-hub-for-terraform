@@ -2,6 +2,7 @@
    SPDX-License-Identifier: MIT-0 */
 
 locals {
+  dns_proto = ["tcp", "udp"]
   attachment_subnet = {
     "az2a" = {
       subnet      = cidrsubnet(aws_vpc.dns_vpc.cidr_block, 5, 0),     # /27
