@@ -12,6 +12,7 @@ module "network" {
   network_hub_account_number = local.config.network_hub_account_number
   aws_region                 = var.aws_region
   environment                = var.environment
+  vpc_name                   = var.vpc_name
 }
 
 module "dns" {

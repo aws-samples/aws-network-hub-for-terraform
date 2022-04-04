@@ -8,7 +8,7 @@ resource "aws_vpc" "spoke_vpc" {
   enable_dns_hostnames             = true
   assign_generated_ipv6_cidr_block = true
   tags = {
-    Name = "spoke_vpc"
+    Name = "${var.vpc_name}_vpc"
   }
 }
 
@@ -17,7 +17,7 @@ resource "aws_vpc_dhcp_options" "spoke_vpc" {
   ntp_servers         = ["169.254.169.123", "fd00:ec2::123"]
 
   tags = {
-    Name = "spoke_dhcp_options"
+    Name = "${var.vpc_name}_dhcp_options"
   }
 }
 
@@ -29,7 +29,7 @@ resource "aws_vpc_dhcp_options_association" "spoke_vpc" {
 resource "aws_egress_only_internet_gateway" "spoke_vpc" {
   vpc_id = aws_vpc.spoke_vpc.id
   tags = {
-    Name = "spoke_eigw"
+    Name = "${var.vpc_name}_eigw"
   }
 }
 
@@ -40,7 +40,7 @@ resource "aws_default_security_group" "default" {
 resource "aws_route_table" "spoke_vpc" {
   vpc_id = aws_vpc.spoke_vpc.id
   tags = {
-    Name = "spoke_route_table"
+    Name = "${var.vpc_name}_rtb"
   }
 }
 
@@ -56,7 +56,7 @@ resource "aws_subnet" "endpoint_subnet" {
   enable_resource_name_dns_a_record_on_launch    = true
   enable_resource_name_dns_aaaa_record_on_launch = true
   tags = {
-    Name    = format("spoke_endpoint_%s", each.value.az)
+    Name    = format("%s_endpoint_%s", var.vpc_name, each.value.az)
     Network = "private"
     Type    = "endpoint"
   }
@@ -121,7 +121,7 @@ resource "aws_subnet" "app_subnet" {
   enable_resource_name_dns_a_record_on_launch    = true
   enable_resource_name_dns_aaaa_record_on_launch = true
   tags = {
-    Name    = format("spoke_app_%s", each.value.az)
+    Name    = format("%s_app_%s", var.vpc_name, each.value.az)
     Network = "private"
     Type    = "app"
   }

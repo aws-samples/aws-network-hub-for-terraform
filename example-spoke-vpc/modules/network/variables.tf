@@ -45,3 +45,9 @@ variable "network_hub_account_number" {
   type        = string
   description = "Network Hub account ID"
 }
+
+variable "vpc_name" {
+  type        = string
+  description = "Name of the VPC"
+  default     = "spoke"
+}
