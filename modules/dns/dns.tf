@@ -22,7 +22,7 @@ resource "aws_security_group" "allow_dns" {
 
 resource "aws_security_group_rule" "dns_tcp" {
   # Creates Security group rule to allow dns endpoint traffic, attaches to security group created above.
-  for_each = toset(local.dns_proto)
+  for_each          = toset(local.dns_proto)
   type              = "ingress"
   from_port         = 53
   to_port           = 53

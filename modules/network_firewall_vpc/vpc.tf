@@ -105,6 +105,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "vpc_inspection" {
   transit_gateway_id                              = var.tgw
   vpc_id                                          = aws_vpc.inspection_vpc.id
   dns_support                                     = "enable"
+  appliance_mode_support                          = "enable"
   ipv6_support                                    = "enable"
   transit_gateway_default_route_table_association = false
   transit_gateway_default_route_table_propagation = false
