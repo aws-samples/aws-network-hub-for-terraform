@@ -91,9 +91,9 @@ resource "aws_route" "default_route" {
 }
 
 resource "aws_route" "default_route_ipv6" {
-  route_table_id         = aws_route_table.spoke_vpc.id
-  destination_cidr_block = "::/0"
-  transit_gateway_id     = var.tgw
+  route_table_id              = aws_route_table.spoke_vpc.id
+  destination_ipv6_cidr_block = "::/0"
+  transit_gateway_id          = var.tgw
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "env" {
