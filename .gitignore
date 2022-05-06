@@ -43,3 +43,5 @@ keys/
 
 # vscode
 .vscode
+
+.terraform.lock.hcl
