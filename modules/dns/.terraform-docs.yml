@@ -1,0 +1,16 @@
+formatter: markdown table
+
+settings:
+  anchor: false
+  escape: false
+  indent: 4
+
+output:
+  file: ../../README.md
+  mode: inject
+  template: |-
+    <!-- BEGIN_TF_DNS_DOCS -->
+
+    {{ .Content }}
+
+    <!-- END_TF_DNS_DOCS -->
