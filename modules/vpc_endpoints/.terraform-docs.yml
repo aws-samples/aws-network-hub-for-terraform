@@ -2,6 +2,7 @@ formatter: markdown table
 
 settings:
   anchor: false
+  escape: false
   indent: 4
 
 output:
@@ -9,5 +10,7 @@ output:
   mode: inject
   template: |-
     <!-- BEGIN_TF_VPCE_DOCS -->
+
     {{ .Content }}
+
     <!-- END_TF_VPCE_DOCS -->
