@@ -34,6 +34,7 @@ resource "aws_iam_role" "flow_logs" {
 EOF
 }
 
+#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_role_policy" "flow_logs" {
   name = "vpc_flow_logs"
   role = aws_iam_role.flow_logs.id

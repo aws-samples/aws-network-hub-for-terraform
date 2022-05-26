@@ -101,6 +101,7 @@ EOF
   }
 }
 
+#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "central_network" {
   name        = "${var.environment}_central_network_automation_policy"
   path        = "/"
@@ -183,6 +184,7 @@ resource "aws_iam_role" "flow_logs" {
 EOF
 }
 
+#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_role_policy" "flow_logs" {
   name = "endpoint_vpc_flow_logs"
   role = aws_iam_role.flow_logs.id
