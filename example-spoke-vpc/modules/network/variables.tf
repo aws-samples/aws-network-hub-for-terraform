@@ -31,11 +31,6 @@ variable "aws_region" {
   description = "AWS region being deployed to"
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "default provider tags"
-}
-
 variable "tgw_association" {
   type        = string
   description = "tgw route table to associate to"
