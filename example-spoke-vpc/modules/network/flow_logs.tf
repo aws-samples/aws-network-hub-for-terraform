@@ -59,7 +59,7 @@ resource "aws_iam_role_policy" "flow_logs" {
 EOF
 }
 
-# Creat a KMS key for CloudWatch Log encryption
+# Create a KMS key for CloudWatch Log encryption
 resource "aws_kms_key" "log_key" {
   description             = "KMS Logs Key"
   deletion_window_in_days = 7
