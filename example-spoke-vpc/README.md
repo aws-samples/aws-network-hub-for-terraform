@@ -285,7 +285,7 @@ No modules.
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | interface_endpoints | object representing the region and services to create interface endpoints for | `map(string)` | n/a | yes |
 | network_hub_account_number | Network Hub account ID | `string` | n/a | yes |
-| tgw | TGW route tables for VPC attachment | `string` | n/a | yes |
+| tgw | TGW ID | `string` | n/a | yes |
 | tgw_association | tgw route table to associate to | `string` | n/a | yes |
 | tgw_route_table | TGW route tables for VPC association and propagation | `map(string)` | n/a | yes |
 | vpc_name | Name of the VPC | `string` | `"spoke"` | no |
