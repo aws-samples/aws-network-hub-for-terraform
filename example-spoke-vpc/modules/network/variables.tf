@@ -22,7 +22,7 @@ variable "tgw_route_table" {
 }
 
 variable "tgw" {
-  description = "TGW route tables for VPC attachment"
+  description = "TGW ID"
   type        = string
 }
 
