@@ -22,18 +22,13 @@ variable "tgw_route_table" {
 }
 
 variable "tgw" {
-  description = "TGW route tables for VPC attachment"
+  description = "TGW ID"
   type        = string
 }
 
 variable "aws_region" {
   type        = string
   description = "AWS region being deployed to"
-}
-
-variable "tags" {
-  type        = map(string)
-  description = "default provider tags"
 }
 
 variable "tgw_association" {

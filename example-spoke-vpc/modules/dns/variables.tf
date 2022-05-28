@@ -21,11 +21,6 @@ variable "aws_region" {
   description = "AWS region being deployed to"
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "default provider tags"
-}
-
 variable "network_hub_account_number" {
   type        = string
   description = "Network Hub account ID"
