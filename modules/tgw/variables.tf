@@ -17,12 +17,12 @@ variable "az_names" {
 }
 
 variable "cidr" {
-  description = "corporate cidr range for use with blackholing traffic between production and development environments"
+  description = "Corporate CIDR range for use with blackholing traffic between production and development environments"
   type        = string
 }
 
 variable "inspection_attachment" {
-  description = "inspection vpc attachment for default route"
+  description = "Inspection VPC attachment for default route"
   type        = string
 }
 

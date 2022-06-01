@@ -3,5 +3,5 @@
 
 output "vpc_id" {
   value       = module.network.vpc_id
-  description = "vpc id used for other modules"
+  description = "VPC ID used for other modules"
 }

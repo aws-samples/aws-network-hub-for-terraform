@@ -12,7 +12,7 @@ variable "az_names" {
 }
 
 variable "interface_endpoints" {
-  description = "object representing the region and services to create interface endpoints for"
+  description = "Object representing the region and services to create interface endpoints for"
   type        = map(string)
 }
 
@@ -22,7 +22,7 @@ variable "tgw_route_table" {
 }
 
 variable "tgw" {
-  description = "TGW ID"
+  description = "TGW ID for VPC attachments"
   type        = string
 }
 
@@ -33,7 +33,7 @@ variable "aws_region" {
 
 variable "tgw_association" {
   type        = string
-  description = "tgw route table to associate to"
+  description = "TGW route table to associate to"
 }
 
 variable "network_hub_account_number" {
