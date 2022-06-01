@@ -17,7 +17,7 @@ variable "az_names" {
 }
 
 variable "cidr" {
-  description = "corporate cidr range for use with blackholing traffic between production and development environments"
+  description = "Corporate CIDR range for use with blackholing traffic between production and development environments"
   type        = string
 }
 
@@ -32,16 +32,16 @@ variable "tgw_route_tables" {
 }
 
 variable "tgw" {
-  description = "TGW route tables for VPC attachment"
+  description = "TGW ID for VPC attachments"
   type        = string
 }
 
 variable "kms_key_id" {
-  description = "vpc flow logs kms key to encrypt logs"
+  description = "VPC Flow Logs KMS key to encrypt logs"
   type        = string
 }
 
 variable "iam_role_arn" {
-  description = "iam role to allow vpc flow logs to write to cloudwatch"
+  description = "IAM role to allow VPC Flow Logs to write to CloudWatch"
   type        = string
 }

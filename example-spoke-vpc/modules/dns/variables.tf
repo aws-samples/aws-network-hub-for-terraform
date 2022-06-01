@@ -7,12 +7,12 @@ variable "environment" {
 }
 
 variable "vpc_id" {
-  description = "vpc id to associate delegated subdomain to"
+  description = "VPC ID to associate delegated subdomain to"
   type        = string
 }
 
 variable "root_domain" {
-  description = "rootdomain for the delegated private hosted zone"
+  description = "Root domain for the delegated private hosted zone"
   type        = string
 }
 
