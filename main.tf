@@ -73,31 +73,33 @@ module "network_firewall_vpc" {
 resource "aws_iam_role" "central_network" {
   #checkov:skip=CKV_AWS_60: Automation role - requires Org perm with additional tag based condition for sample only
   name               = "${var.environment}_network_automation_role"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": "sts:AssumeRole",
-      "Condition": {
-        "StringEquals": {
-          "aws:PrincipalOrgID":["${data.aws_organizations_organization.main.id}"]
-      },
-        "StringNotEqualsIgnoreCase": {
-          "aws:RequestTag/automation":"true"
-        }
-      }
-    }
-  ]
-}
-EOF
-
+  assume_role_policy = data.aws_iam_policy_document.central_network_role_assume_role_policy.json
   tags = {
     automation = "true"
+  }
+}
+
+data "aws_iam_policy_document" "central_network_role_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalOrgID"
+      values   = [data.aws_organizations_organization.main.id]
+    }
+
+    condition {
+      test     = "StringNotEqualsIgnoreCase"
+      variable = "aws:RequestTag/automation"
+      values   = ["true"]
+    }
+
+    principals {
+      identifiers = ["*"]
+      type        = "AWS"
+    }
   }
 }
 
