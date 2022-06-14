@@ -275,6 +275,10 @@ resource "aws_route" "egress_route_ipv6" {
 resource "aws_eip" "internet_vpc_nat" {
   for_each = local.inspection_subnet
   #checkov:skip=CKV2_AWS_19: EIP Used to for NAT Gateway
+
+  tags = {
+    Name = "internet_vpc_nat-${each.value.az}"
+  }
 }
 
 resource "aws_nat_gateway" "internet" {
