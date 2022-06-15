@@ -53,7 +53,7 @@ resource "aws_route53_resolver_endpoint" "inbound" {
   }
 }
 resource "aws_route53_resolver_endpoint" "outbound" {
-  name      = "Org-Inbound-Resolver-Endpoint"
+  name      = "Org-Outbound-Resolver-Endpoint"
   direction = "OUTBOUND"
 
   security_group_ids = [
