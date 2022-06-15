@@ -5,17 +5,26 @@ resource "aws_vpc_ipam" "org_ipam" {
   operating_regions {
     region_name = var.aws_region
   }
+  tags = {
+    Name = "org_ipam"
+  }
 }
 
 resource "aws_vpc_ipam_scope" "private_org_ipam_scope" {
   ipam_id     = aws_vpc_ipam.org_ipam.id
   description = "Org Scope"
+  tags = {
+    Name = "private_org_ipam_scope"
+  }
 }
 
 resource "aws_vpc_ipam_pool" "private_org_ipam_pool" {
   address_family = "ipv4"
   ipam_scope_id  = aws_vpc_ipam_scope.private_org_ipam_scope.id
   locale         = var.aws_region
+  tags = {
+    Name = "private_org_ipam_scope"
+  }
 }
 
 resource "aws_vpc_ipam_pool_cidr" "private_org_ipam_pool" {
