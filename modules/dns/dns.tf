@@ -80,7 +80,7 @@ resource "aws_route53_resolver_rule" "fwd" {
   resolver_endpoint_id = aws_route53_resolver_endpoint.outbound.id
 
   dynamic "target_ip" {
-    for_each = aws_route53_resolver_endpoint.outbound.ip_address
+    for_each = aws_route53_resolver_endpoint.inbound.ip_address
 
     content {
       ip = target_ip.value.ip
