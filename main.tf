@@ -157,6 +157,13 @@ resource "aws_iam_policy" "central_network" {
         Effect   = "Allow"
         Resource = "*"
       },
+      {
+        Action = [
+          "ram:*"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
     ]
   })
 }
