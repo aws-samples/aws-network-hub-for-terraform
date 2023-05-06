@@ -60,6 +60,7 @@ module "network_firewall_vpc" {
   iam_role_arn     = aws_iam_role.flow_logs.arn
   tgw_route_tables = module.tgw.tgw_route_table
   tgw              = module.tgw.tgw
+  org_arn          = local.aws_org_arn
   org_ipam_pool    = module.ipam.org_ipam_pool
   cidr             = local.config.ipam_cidr
   az_names         = local.availability_zone_names
