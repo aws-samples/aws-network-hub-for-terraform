@@ -21,6 +21,11 @@ variable "cidr" {
   type        = string
 }
 
+variable "org_arn" {
+  description = "The ARN of the AWS Organization this account belongs to"
+  type        = string
+}
+
 variable "org_ipam_pool" {
   description = "IPAM pool ID to allocate CIDR space"
   type        = string

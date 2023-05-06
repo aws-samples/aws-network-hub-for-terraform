@@ -16,6 +16,7 @@ module "network" {
   aws_region                 = var.aws_region
   environment                = var.environment
   vpc_name                   = var.vpc_name
+  enable_ingress             = var.enable_ingress
 }
 
 module "dns" {

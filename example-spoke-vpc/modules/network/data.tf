@@ -6,4 +6,10 @@ data "aws_ssm_parameter" "ipam_pool" {
   name     = "/ipam/pool/id"
 }
 
+data "aws_ram_resource_share" "org_vpc_share" {
+  provider       = aws.network_hub
+  name           = "vpc-org-share"
+  resource_owner = "SELF"
+}
+
 data "aws_caller_identity" "current" {}

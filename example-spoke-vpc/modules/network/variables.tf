@@ -11,6 +11,11 @@ variable "az_names" {
   type        = list(string)
 }
 
+variable "enable_ingress" {
+  description = "Whether Ingress should be enabled by accepting the org-vpc-share"
+  type        = bool
+}
+
 variable "interface_endpoints" {
   description = "Object representing the region and services to create interface endpoints for"
   type        = map(string)

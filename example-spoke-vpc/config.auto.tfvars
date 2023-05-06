@@ -5,6 +5,9 @@ aws_region                = "eu-west-2"
 vpc_endpoints             = ["s3"]
 centralised_vpc_endpoints = ["ec2", "rds", "sqs", "sns", "ssm", "logs", "ssmmessages", "ec2messages", "autoscaling", "ecs", "athena"]
 
+# Set this to true if you want to share the network-hub's public subnets with this account:
+enable_ingress            = false
+
 tags = {
   Product    = "Network_Automation"
   Owner      = "WWPS"

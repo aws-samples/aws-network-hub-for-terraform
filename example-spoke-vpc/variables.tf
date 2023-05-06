@@ -6,6 +6,12 @@ variable "environment" {
   type        = string
 }
 
+variable "enable_ingress" {
+  description = "Whether Ingress should be enabled by accepting the org-vpc-share"
+  type        = bool
+  default     = false
+}
+
 variable "env_config" {
   description = "Map of objects for per environment configuration"
   type = map(object({
