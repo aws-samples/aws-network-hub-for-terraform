@@ -311,3 +311,26 @@ resource "aws_egress_only_internet_gateway" "eigw" {
     Name = "inspection_eigw"
   }
 }
+
+resource "aws_ram_resource_share" "main" {
+  name                      = "vpc-org-share"
+  allow_external_principals = false
+
+  tags = {
+    Name = "org-vpc-ram-share"
+  }
+}
+
+# Requires RAM enabled to share with AWS org:
+# enable in org master account with 'aws ram enable-sharing-with-aws-organization'
+resource "aws_ram_principal_association" "org" {
+  principal          = var.org_arn
+  resource_share_arn = aws_ram_resource_share.main.arn
+}
+
+# Requires RAM enabled to share with AWS org
+resource "aws_ram_resource_association" "internet_subnet" {
+  for_each = aws_subnet.internet_subnet
+  resource_arn = each.value.arn
+  resource_share_arn =  aws_ram_resource_share.main.arn
+}

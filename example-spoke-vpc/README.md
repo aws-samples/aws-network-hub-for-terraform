@@ -100,6 +100,9 @@ aws_region                = "eu-west-2"
 vpc_endpoints             = ["s3"]
 centralised_vpc_endpoints = ["ec2", "rds", "sqs", "sns", "ssm", "logs", "ssmmessages", "ec2messages", "autoscaling", "ecs", "athena"]
 
+# Set this to true if you want to share the network-hub's public subnets with this account:
+enable_ingress            = false
+
 env_config = {
   dev = {
     network_hub_account_number = "<Network_Hub_Account_ID>"
@@ -209,6 +212,7 @@ Note that this command will delete all the resources previously created by Terra
 | aws_region | AWS region being deployed to | `string` | n/a | yes |
 | az_count | Number of availability zones | `number` | `2` | no |
 | centralised_vpc_endpoints | Which centralised VPC endpoints to consume | `list(string)` | n/a | yes |
+| enable_ingress | Whether Ingress should be enabled by accepting the org-vpc-share | `bool` | false | no |
 | env_config | Map of objects for per environment configuration | <pre>map(object({<br>    network_hub_account_number = string<br>    tgw_route_tables           = list(string)<br>    root_domain                = string<br>  }))</pre> | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | tags | Default tags to apply to all resources | `map(string)` | n/a | yes |
@@ -257,6 +261,7 @@ No modules.
 | [aws_iam_role.flow_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy.flow_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [aws_kms_key.log_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_ram_principal_association.org_vpc_share_invite](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ram_principal_association) | resource |
 | [aws_route.default_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
 | [aws_route.default_route_ipv6](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
 | [aws_route53_record.dev-ns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
@@ -274,6 +279,7 @@ No modules.
 | [aws_vpc_endpoint.interface](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_endpoint) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.policy_kms_logs_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_ram_resource_share.org_vpc_share](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ram_resource_share) | data source |
 | [aws_ssm_parameter.ipam_pool](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssm_parameter) | data source |
 
 #### Inputs
@@ -282,6 +288,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | aws_region | AWS region being deployed to | `string` | n/a | yes |
 | az_names | A list of the Availability Zone names available to the account | `list(string)` | n/a | yes |
+| enable_ingress | Whether Ingress should be enabled by accepting the org-vpc-share | `bool` | n/a | yes |
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | interface_endpoints | Object representing the region and services to create interface endpoints for | `map(string)` | n/a | yes |
 | network_hub_account_number | Network Hub account ID | `string` | n/a | yes |

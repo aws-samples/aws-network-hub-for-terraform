@@ -541,6 +541,9 @@ No modules.
 | [aws_networkfirewall_firewall_policy.anfw_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_firewall_policy) | resource |
 | [aws_networkfirewall_logging_configuration.network_firewall_alert_logging_configuration](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_logging_configuration) | resource |
 | [aws_networkfirewall_rule_group.block_domains](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/networkfirewall_rule_group) | resource |
+| [aws_ram_principal_association.org](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ram_principal_association) | resource |
+| [aws_ram_resource_association.internet_subnet](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ram_resource_association) | resource |
+| [aws_ram_resource_share.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ram_resource_share) | resource |
 | [aws_route.default_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
 | [aws_route.default_route_ipv6](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
 | [aws_route.egress_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route) | resource |
@@ -573,6 +576,7 @@ No modules.
 | environment | Deployment environment passed as argument or environment variable | `string` | n/a | yes |
 | iam_role_arn | IAM role to allow VPC Flow Logs to write to CloudWatch | `string` | n/a | yes |
 | kms_key_id | VPC Flow Logs KMS key to encrypt logs | `string` | n/a | yes |
+| org_arn | The ARN of the AWS Organization this account belongs to | `string` | n/a | yes |
 | org_ipam_pool | IPAM pool ID to allocate CIDR space | `string` | n/a | yes |
 | tgw | TGW ID for VPC attachments | `string` | n/a | yes |
 | tgw_route_tables | TGW route tables for VPC association and propagation | `map(string)` | n/a | yes |
